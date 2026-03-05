@@ -17,6 +17,7 @@ const navLinks = [
   { label: "Supermercado", href: "#", badge: "NUEVO" },
   { label: "Moda", href: "#" },
   { label: "Vender", href: "#" },
+  { label: "Portafolios", href: "/portafolio" },
   { label: "Ayuda / PQR", href: "#" },
 ]
 
