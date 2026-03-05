@@ -1,4 +1,9 @@
-import { Truck } from "lucide-react"
+"use client"
+
+import { useState, useEffect } from "react"
+import { Truck, AlertCircle } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
 
 interface Product {
   id: number
@@ -11,73 +16,36 @@ interface Product {
   freeShipping?: boolean
 }
 
-const dailyDeal: Product = {
-  id: 1,
-  name: "Bascula Personal Inteligente Bluetooth Balanza Digital De Peso",
-  image:
-    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-K1tl17yKMqT16K504Y8dxP4xIj8dUR.png",
-  originalPrice: 109900,
-  price: 63000,
-  discount: 42,
-  installments: { count: 3, price: 21000 },
-  freeShipping: true,
-}
-
-const offers: Product[] = [
-  {
-    id: 2,
-    name: "Kit De Pesas Magnux Ejercicio Mancuernas Set Ki...",
-    image: "/placeholder-product-1.jpg",
-    originalPrice: 999833,
-    price: 297900,
-    discount: 70,
-    installments: { count: 3, price: 99300 },
-    freeShipping: true,
-  },
-  {
-    id: 3,
-    name: "Proyector Video Beam Portatil Fika P8 4k Hd 720p...",
-    image: "/placeholder-product-2.jpg",
-    originalPrice: 586385,
-    price: 309429,
-    discount: 47,
-    installments: { count: 6, price: 51572 },
-    freeShipping: true,
-  },
-  {
-    id: 4,
-    name: "Compresor De Aire Mini Electrico Portatil Magnux...",
-    image: "/placeholder-product-3.jpg",
-    originalPrice: 219800,
-    price: 87900,
-    discount: 60,
-    installments: { count: 3, price: 29300 },
-    freeShipping: true,
-  },
-  {
-    id: 5,
-    name: "Tensiometro Digital Bateria Recargable Usb Monit...",
-    image: "/placeholder-product-4.jpg",
-    originalPrice: 200000,
-    price: 79000,
-    discount: 60,
-    installments: { count: 6, price: 13167 },
-    freeShipping: true,
-  },
-]
+// Factor de conversión para simular precios en pesos colombianos (COP)
+const COP_EXCHANGE_RATE = 4000
 
 function formatPrice(price: number) {
   return `$ ${price.toLocaleString("es-CO")}`
 }
 
 function ProductCard({ product }: { product: Product }) {
+  const [imageLoaded, setImageLoaded] = useState(false)
+
   return (
     <a href="#" className="group flex flex-col gap-2">
-      <div className="aspect-square overflow-hidden rounded-lg bg-muted">
+      <div className="aspect-square overflow-hidden rounded-lg bg-muted relative">
+        {!imageLoaded && (
+          <Skeleton className="absolute inset-0 z-10" />
+        )}
         <div className="flex h-full items-center justify-center bg-card p-4">
-          <div className="flex h-full w-full items-center justify-center rounded-md bg-muted text-xs text-muted-foreground">
-            Imagen del producto
-          </div>
+          <img
+            src={product.image}
+            alt={product.name}
+            className={`h-full w-full object-contain transition-opacity duration-300 ${
+              imageLoaded ? "opacity-100" : "opacity-0"
+            }`}
+            onLoad={() => setImageLoaded(true)}
+            onError={(e) => {
+              const target = e.target as HTMLImageElement
+              target.src = "/placeholder.svg"
+              setImageLoaded(true)
+            }}
+          />
         </div>
       </div>
       <div className="flex flex-col gap-0.5">
@@ -108,7 +76,7 @@ function ProductCard({ product }: { product: Product }) {
             </span>
           </div>
         )}
-        <p className="mt-1 text-xs text-secondary group-hover:text-secondary/80">
+        <p className="mt-1 text-xs text-secondary group-hover:text-secondary/80 line-clamp-2">
           {product.name}
         </p>
       </div>
@@ -116,7 +84,92 @@ function ProductCard({ product }: { product: Product }) {
   )
 }
 
+function ProductSkeleton() {
+  return (
+    <div className="flex flex-col gap-2">
+      <Skeleton className="aspect-square w-full rounded-lg" />
+      <div className="flex flex-col gap-1.5">
+        <Skeleton className="h-3 w-1/3" />
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-6 w-1/2" />
+          <Skeleton className="h-4 w-1/4" />
+        </div>
+        <Skeleton className="h-3 w-3/4" />
+        <Skeleton className="h-4 w-1/4" />
+        <Skeleton className="h-3 w-full" />
+      </div>
+    </div>
+  )
+}
+
 export default function ProductsSection() {
+  const [dailyDeal, setDailyDeal] = useState<Product | null>(null)
+  const [offers, setOffers] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [imageLoadedDaily, setImageLoadedDaily] = useState(false)
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+        
+        const response = await fetch("https://fakestoreapi.com/products?limit=5")
+        if (!response.ok) throw new Error("Error al obtener los productos")
+        
+        const data = await response.json()
+        
+        const mappedProducts = data.map((item: any) => {
+          const priceInCop = Math.round(item.price * COP_EXCHANGE_RATE)
+          const discount = Math.floor(Math.random() * 30) + 20 // 20% - 50% discount
+          const originalPrice = Math.round(priceInCop / (1 - discount / 100))
+          
+          return {
+            id: item.id,
+            name: item.title,
+            image: item.image,
+            price: priceInCop,
+            originalPrice: originalPrice,
+            discount: discount,
+            installments: {
+              count: 3,
+              price: Math.round(priceInCop / 3)
+            },
+            freeShipping: true
+          }
+        })
+
+        if (mappedProducts.length > 0) {
+          setDailyDeal(mappedProducts[0])
+          setOffers(mappedProducts.slice(1))
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Ocurrió un error inesperado")
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchProducts()
+  }, [])
+
+  if (error) {
+    return (
+      <section className="bg-background py-6">
+        <div className="mx-auto max-w-7xl px-4">
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>
+              {error}. Por favor, intenta recargar la página más tarde.
+            </AlertDescription>
+          </Alert>
+        </div>
+      </section>
+    )
+  }
+
   return (
     <section className="bg-background py-6" aria-label="Productos y ofertas">
       <div className="mx-auto max-w-7xl px-4">
@@ -126,43 +179,62 @@ export default function ProductsSection() {
             <h2 className="mb-4 text-xl font-bold text-foreground">
               Oferta del dia
             </h2>
-            <a href="#" className="group block">
-              <div className="mb-3 aspect-square overflow-hidden rounded-lg bg-muted">
-                <div className="flex h-full items-center justify-center rounded-md bg-muted p-4 text-xs text-muted-foreground">
-                  Imagen del producto destacado
+            {loading || !dailyDeal ? (
+              <ProductSkeleton />
+            ) : (
+              <a href="#" className="group block">
+                <div className="mb-3 aspect-square overflow-hidden rounded-lg bg-muted relative">
+                  {!imageLoadedDaily && (
+                    <Skeleton className="absolute inset-0 z-10" />
+                  )}
+                  <div className="flex h-full items-center justify-center rounded-md bg-muted p-4">
+                    <img
+                      src={dailyDeal.image}
+                      alt={dailyDeal.name}
+                      className={`h-full w-full object-contain transition-opacity duration-300 ${
+                        imageLoadedDaily ? "opacity-100" : "opacity-0"
+                      }`}
+                      onLoad={() => setImageLoadedDaily(true)}
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement
+                        target.src = "/placeholder.svg"
+                        setImageLoadedDaily(true)
+                      }}
+                    />
+                  </div>
                 </div>
-              </div>
-              <p className="text-sm text-foreground group-hover:text-secondary">
-                {dailyDeal.name}
-              </p>
-              <p className="mt-1 text-xs text-muted-foreground line-through">
-                {formatPrice(dailyDeal.originalPrice)}
-              </p>
-              <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-normal text-foreground">
-                  {formatPrice(dailyDeal.price)}
-                </span>
-                <span className="text-sm font-semibold text-accent">
-                  {dailyDeal.discount}% OFF
-                </span>
-              </div>
-              {dailyDeal.installments && (
-                <p className="text-xs text-accent">
-                  {dailyDeal.installments.count} cuotas de{" "}
-                  {formatPrice(dailyDeal.installments.price)} con 0% interes
+                <p className="text-sm text-foreground group-hover:text-secondary line-clamp-2">
+                  {dailyDeal.name}
                 </p>
-              )}
-              {dailyDeal.freeShipping && (
-                <div className="mt-1 flex items-center gap-1 text-xs font-semibold text-accent">
-                  <Truck className="h-3 w-3" />
-                  Envio gratis
-                  <span className="font-normal text-muted-foreground">
-                    {" "}
-                    por ser tu primera compra
+                <p className="mt-1 text-xs text-muted-foreground line-through">
+                  {formatPrice(dailyDeal.originalPrice)}
+                </p>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-2xl font-normal text-foreground">
+                    {formatPrice(dailyDeal.price)}
+                  </span>
+                  <span className="text-sm font-semibold text-accent">
+                    {dailyDeal.discount}% OFF
                   </span>
                 </div>
-              )}
-            </a>
+                {dailyDeal.installments && (
+                  <p className="text-xs text-accent">
+                    {dailyDeal.installments.count} cuotas de{" "}
+                    {formatPrice(dailyDeal.installments.price)} con 0% interes
+                  </p>
+                )}
+                {dailyDeal.freeShipping && (
+                  <div className="mt-1 flex items-center gap-1 text-xs font-semibold text-accent">
+                    <Truck className="h-3 w-3" />
+                    Envio gratis
+                    <span className="font-normal text-muted-foreground">
+                      {" "}
+                      por ser tu primera compra
+                    </span>
+                  </div>
+                )}
+              </a>
+            )}
           </div>
 
           {/* Offers grid */}
@@ -177,9 +249,15 @@ export default function ProductsSection() {
               </a>
             </div>
             <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-              {offers.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
+              {loading ? (
+                Array.from({ length: 4 }).map((_, i) => (
+                  <ProductSkeleton key={i} />
+                ))
+              ) : (
+                offers.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))
+              )}
             </div>
           </div>
         </div>
@@ -205,3 +283,4 @@ export default function ProductsSection() {
     </section>
   )
 }
+
