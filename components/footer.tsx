@@ -10,6 +10,7 @@ const footerLinks = {
     "Mercado Pago",
     "Mercado Shops",
     "Mercado Envios",
+    "Portafolios",
   ],
   "Ayuda": [
     "Comprar",
