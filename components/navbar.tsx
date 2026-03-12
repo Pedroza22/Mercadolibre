@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Image from "next/image"
 import {
   Search,
   ShoppingCart,
@@ -31,30 +32,15 @@ export default function Navbar() {
       <div className="mx-auto max-w-7xl px-4 py-2">
         <div className="flex items-center gap-4">
           {/* Logo */}
-          <a href="#" className="flex shrink-0 items-center gap-1">
-            <svg
-              viewBox="0 0 134 54"
+          <a href="#" className="flex shrink-0 items-center">
+            <Image
+              src="/mercado.svg"
+              alt="Logo"
+              width={140}
+              height={70}
               className="h-9 w-auto"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <ellipse cx="67" cy="27" rx="67" ry="27" fill="#FFE600" />
-              <path
-                d="M67 8C51.536 8 39 18.745 39 32c0 7.348 3.768 13.89 9.662 18.254C43.81 46.368 40.5 39.71 40.5 32.25 40.5 19.552 52.36 9.25 67 9.25s26.5 10.302 26.5 23c0 7.46-3.31 14.118-8.162 18.004C91.232 45.89 95 39.348 95 32 95 18.745 82.464 8 67 8z"
-                fill="#2D3277"
-              />
-              <circle cx="57" cy="26" r="4" fill="#2D3277" />
-              <circle cx="77" cy="26" r="4" fill="#2D3277" />
-              <path
-                d="M56 35c0 0 4 7 11 7s11-7 11-7"
-                stroke="#2D3277"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-              />
-            </svg>
-            <span className="hidden text-lg font-bold text-ml-dark lg:block">
-              mercado<br />libre
-            </span>
+              priority
+            />
           </a>
 
           {/* Search bar */}
@@ -109,18 +95,18 @@ export default function Navbar() {
       </div>
 
       {/* Nav links bar */}
-      <div className="border-t border-primary/60 bg-card">
-        <div className="mx-auto hidden max-w-7xl items-center justify-between px-4 py-1.5 lg:flex">
-          <div className="flex items-center gap-1 text-sm text-muted-foreground">
+      <div className="border-t border-primary/60 bg-primary">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-2 py-1 md:px-4 md:py-1.5">
+          <div className="hidden items-center gap-1 text-sm text-ml-dark md:flex">
             <MapPin className="h-4 w-4" />
             <span>Ingresa tu ubicación</span>
           </div>
-          <nav className="flex items-center gap-5 text-sm text-foreground">
+          <nav className="flex items-center gap-3 overflow-x-auto whitespace-nowrap text-sm text-ml-dark md:gap-5">
             {navLinks.map((link) => (
               <a
                 key={link.label}
                 href={link.href || "#"}
-                className="relative flex items-center gap-0.5 transition-colors hover:text-secondary"
+                className="relative flex items-center gap-0.5 px-1 transition-colors hover:text-secondary md:px-0"
               >
                 {link.label}
                 {link.hasDropdown && <ChevronDown className="h-3.5 w-3.5" />}
@@ -132,7 +118,7 @@ export default function Navbar() {
               </a>
             ))}
           </nav>
-          <div className="w-32" />
+          <div className="hidden w-32 md:block" />
         </div>
       </div>
 

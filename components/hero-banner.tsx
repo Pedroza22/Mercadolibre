@@ -1,38 +1,20 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
+import Image from "next/image"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
-const banners = [
-  {
-    title: "3/3 FECHAS DOBLES",
-    subtitle: "Ultimo dia",
-    offers: ["HASTA 50% OFF", "HASTA 12 CUOTAS 0% INTERES"],
-    bgGradient: "from-primary via-primary to-primary/80",
-  },
-  {
-    title: "OFERTAS IMPERDIBLES",
-    subtitle: "Solo hoy",
-    offers: ["HASTA 40% OFF", "ENVIO GRATIS"],
-    bgGradient: "from-secondary via-secondary to-secondary/80",
-  },
-  {
-    title: "TECNOLOGIA",
-    subtitle: "Los mejores precios",
-    offers: ["HASTA 30% OFF", "6 CUOTAS SIN INTERES"],
-    bgGradient: "from-ml-blue via-ml-blue to-ml-blue/80",
-  },
-]
+const images = ["/prom1.jpg", "/prom2.jpg", "/prom3.jpg"]
 
 export default function HeroBanner() {
   const [currentSlide, setCurrentSlide] = useState(0)
 
   const nextSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev + 1) % banners.length)
+    setCurrentSlide((prev) => (prev + 1) % images.length)
   }, [])
 
   const prevSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev - 1 + banners.length) % banners.length)
+    setCurrentSlide((prev) => (prev - 1 + images.length) % images.length)
   }, [])
 
   useEffect(() => {
@@ -40,59 +22,47 @@ export default function HeroBanner() {
     return () => clearInterval(timer)
   }, [nextSlide])
 
-  const banner = banners[currentSlide]
-
   return (
     <section className="relative overflow-hidden bg-primary" aria-label="Promociones destacadas">
-      <div className={`flex min-h-[280px] items-center justify-center px-4 py-12 transition-all duration-500 md:min-h-[340px] ${banner.bgGradient}`}>
-        <div className="mx-auto flex max-w-5xl flex-col items-center gap-4 text-center">
-          <span className="rounded-sm bg-ml-dark px-4 py-1 text-xs font-bold tracking-wider text-card">
-            {banner.title}
-          </span>
-          <h2 className="text-4xl font-black italic text-ml-dark md:text-6xl">
-            {banner.subtitle}
-          </h2>
-          <div className="flex flex-wrap items-center justify-center gap-4">
-            {banner.offers.map((offer, i) => (
-              <div
-                key={i}
-                className="rounded-lg border-2 border-ml-dark/30 bg-card/90 px-6 py-3 text-center shadow-sm"
-              >
-                <p className="text-lg font-extrabold text-ml-dark md:text-xl">
-                  {offer}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
+      <div className="relative min-h-[340px] md:min-h-[480px]">
+        <Image
+          key={images[currentSlide]}
+          src={images[currentSlide]}
+          alt="Promoción destacada"
+          fill
+          priority
+          className="object-cover"
+          sizes="100vw"
+        />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 md:h-32 bg-gradient-to-b from-transparent to-background" />
       </div>
 
       {/* Controls */}
       <button
         onClick={prevSlide}
-        className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-card/80 p-2 shadow-md transition-colors hover:bg-card"
+        className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-3 shadow-lg transition-all hover:bg-white hover:scale-110"
         aria-label="Banner anterior"
       >
-        <ChevronLeft className="h-5 w-5 text-foreground" />
+        <ChevronLeft className="h-6 w-6 text-foreground" />
       </button>
       <button
         onClick={nextSlide}
-        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-card/80 p-2 shadow-md transition-colors hover:bg-card"
+        className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-3 shadow-lg transition-all hover:bg-white hover:scale-110"
         aria-label="Banner siguiente"
       >
-        <ChevronRight className="h-5 w-5 text-foreground" />
+        <ChevronRight className="h-6 w-6 text-foreground" />
       </button>
 
       {/* Dots */}
-      <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-2">
-        {banners.map((_, i) => (
+      <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 gap-3">
+        {images.map((_, i) => (
           <button
             key={i}
             onClick={() => setCurrentSlide(i)}
-            className={`h-2 w-2 rounded-full transition-all ${
+            className={`h-3 w-3 rounded-full transition-all ${
               i === currentSlide
-                ? "w-4 bg-secondary"
-                : "bg-ml-dark/30"
+                ? "w-8 bg-white shadow-md"
+                : "bg-white/40 hover:bg-white/60"
             }`}
             aria-label={`Ir al banner ${i + 1}`}
           />

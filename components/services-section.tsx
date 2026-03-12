@@ -10,55 +10,68 @@ import {
 const services = [
   {
     icon: Package,
-    title: "Envio gratis",
+    title: "Envío gratis",
     description: "Beneficio por ser tu primera compra.",
+    action: "Mostrar productos",
   },
   {
     icon: UserCircle,
     title: "Ingresa a tu cuenta",
-    description: "Disfruta de ofertas y compra sin limites.",
+    description: "Disfruta de ofertas y compra sin límites.",
+    action: "Ingresar a tu cuenta",
   },
   {
     icon: MapPin,
-    title: "Ingresa tu ubicacion",
+    title: "Ingresa tu ubicación",
     description: "Consulta costos y tiempos de entrega.",
+    action: "Ingresar ubicación",
   },
   {
     icon: CreditCard,
     title: "Medios de pago",
-    description: "Paga tus compras de forma rapida y segura.",
+    description: "Paga tus compras de forma rápida y segura.",
+    action: "Conocer medios de pago",
   },
   {
     icon: DollarSign,
     title: "Menos de $40.000",
     description: "Descubre productos con precios bajos.",
+    action: "Mostrar productos",
   },
   {
     icon: TrendingUp,
-    title: "Mas vendidos",
+    title: "Más vendidos",
     description: "Explora los productos que son tendencia.",
+    action: "Ir a Más vendidos",
   },
 ]
 
 export default function ServicesSection() {
   return (
-    <section className="bg-background py-6" aria-label="Servicios destacados">
+    <section className="relative z-10 -mt-16 md:-mt-24 pb-8" aria-label="Servicios destacados">
       <div className="mx-auto max-w-7xl px-4">
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
           {services.map((service) => (
             <a
               key={service.title}
               href="#"
-              className="flex flex-col items-center gap-3 rounded-lg bg-card p-5 text-center shadow-sm transition-shadow hover:shadow-md"
+              className="group flex flex-col items-center justify-between rounded-lg bg-white p-4 text-center shadow-md transition-all hover:shadow-lg h-full min-h-[220px]"
             >
-              <service.icon className="h-12 w-12 text-secondary" strokeWidth={1.2} />
-              <div>
-                <h3 className="text-sm font-bold text-foreground">
-                  {service.title}
-                </h3>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  {service.description}
-                </p>
+              <div className="flex flex-col items-center gap-3">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-50 transition-colors group-hover:bg-slate-100">
+                  <service.icon className="h-10 w-10 text-slate-700" strokeWidth={1} />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-foreground">
+                    {service.title}
+                  </h3>
+                  <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
+                    {service.description}
+                  </p>
+                </div>
+              </div>
+              <div className="mt-4 w-full rounded-md bg-blue-50 py-1.5 text-[11px] font-medium text-blue-600 transition-colors group-hover:bg-blue-100">
+                {service.action}
               </div>
             </a>
           ))}
