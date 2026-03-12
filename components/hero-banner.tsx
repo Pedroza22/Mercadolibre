@@ -25,36 +25,44 @@ export default function HeroBanner() {
   return (
     <section className="relative overflow-hidden bg-primary" aria-label="Promociones destacadas">
       <div className="relative min-h-[340px] md:min-h-[480px]">
-        <Image
-          key={images[currentSlide]}
-          src={images[currentSlide]}
-          alt="Promoción destacada"
-          fill
-          priority
-          className="object-cover"
-          sizes="100vw"
-        />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 md:h-32 bg-gradient-to-b from-transparent to-background" />
+        <div 
+          className="flex h-full w-full transition-transform duration-700 ease-in-out"
+          style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+        >
+          {images.map((src, index) => (
+            <div key={src} className="relative h-full w-full flex-shrink-0 min-h-[340px] md:min-h-[480px]">
+              <Image
+                src={src}
+                alt={`Promoción destacada ${index + 1}`}
+                fill
+                priority={index === 0}
+                className="object-cover"
+                sizes="100vw"
+              />
+            </div>
+          ))}
+        </div>
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-24 md:h-32 bg-gradient-to-b from-transparent to-background" />
       </div>
 
       {/* Controls */}
       <button
         onClick={prevSlide}
-        className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-3 shadow-lg transition-all hover:bg-white hover:scale-110"
+        className="absolute left-4 top-1/2 z-30 -translate-y-1/2 rounded-full bg-white/90 p-3 shadow-lg transition-all hover:bg-white hover:scale-110"
         aria-label="Banner anterior"
       >
         <ChevronLeft className="h-6 w-6 text-foreground" />
       </button>
       <button
         onClick={nextSlide}
-        className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-3 shadow-lg transition-all hover:bg-white hover:scale-110"
+        className="absolute right-4 top-1/2 z-30 -translate-y-1/2 rounded-full bg-white/90 p-3 shadow-lg transition-all hover:bg-white hover:scale-110"
         aria-label="Banner siguiente"
       >
         <ChevronRight className="h-6 w-6 text-foreground" />
       </button>
 
       {/* Dots */}
-      <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 gap-3">
+      <div className="absolute bottom-6 left-1/2 z-30 flex -translate-x-1/2 gap-3">
         {images.map((_, i) => (
           <button
             key={i}
